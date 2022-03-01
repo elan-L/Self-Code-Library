@@ -1,2 +1,2 @@
-# Self-Android-Library
-This is used to store the android code i've written
+# Self-Code-Library
+This is used to store the template code i've written and met
