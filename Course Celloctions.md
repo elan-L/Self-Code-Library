@@ -64,3 +64,18 @@ class Letter {
 
 # Usual
 
+##　random generator
+
+```java
+// Create a random number generator,
+// seeds with current time by default:
+Random rand = new Random();
+int i, j, k;
+// '%' limits maximum value to 99:
+j = rand.nextInt() % 100;
+k = rand.nextInt() % 100;
+
+float v,w;  // applies to doubles, too
+v = rand.nextFloat();
+w = rand.nextFloat();
+```
