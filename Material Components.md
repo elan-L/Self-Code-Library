@@ -1,4 +1,4 @@
-# Textfield
+# Text field
 
 ```xml
 <com.google.android.material.textfield.TextInputLayout
@@ -16,4 +16,41 @@
         android:layout_height="wrap_content"
         android:inputType="numberDecimal" />
 </com.google.android.material.textfield.TextInputLayout>
+```
+
+
+
+# Card view
+
+A Card view provides an easy way to contain a group of views while providing a consistent style for the container.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <ImageView
+            android:id="@+id/item_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+    </LinearLayout>
+    
+</com.google.android.material.card.MaterialCardView>
 ```
