@@ -39,3 +39,18 @@ button.setOnClickListener {
         .show()
 }
 ```
+
+
+
+
+
+# show message when long pressed
+
+```kotlin
+button.setOnLongClickListener {
+    Toast.makeText(this,"You've long press it",Toast.LENGTH_SHORT)
+        .show()
+    //return value
+    true
+}
+```
