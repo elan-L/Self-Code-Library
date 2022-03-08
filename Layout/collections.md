@@ -116,3 +116,43 @@ private fun handleKeyEvent(view: View, keyCode: Int): Boolean {
    binding.costOfServiceEditText.setOnKeyListener { view, keyCode, _ -> handleKeyEvent(view, keyCode)
       }
    ```
+
+
+
+# intent to the call pane
+
+```kotlin
+private fun callPhone(phoneNumber: String) {
+    val intent = Intent(Intent.ACTION_DIAL)
+    val data = Uri.parse("tel:$phoneNumber")
+    intent.setData(data)
+    startActivity(intent)
+}
+```
+
+# add view
+
+```kotlin
+btnAdd.setOnClickListener {
+            counter++
+
+//            从xml文件中加载并instance一个TextView view
+            val textView=layoutInflater.inflate(R.layout.my_textview,null) as TextView
+
+            textView.text="new view $counter"
+
+            textView.setOnClickListener{
+                Toast.makeText(this,"${(it as TextView).text}",Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+//            add to the viewContainer
+            viewContainer.addView(textView)
+
+        }
+
+        val btnRemoverView:Button=findViewById(R.id.btnRemoveAllView)
+        btnRemoverView.setOnClickListener {
+            viewContainer.removeAllViews()
+        }
+```
