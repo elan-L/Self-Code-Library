@@ -17,31 +17,27 @@ android:scaleType="centerCrop"
 
 
 
-# EditView
+# EditText
 
 
-
-## input Type
-
-specify the input method type
-
-https://developer.android.google.cn/training/keyboard-input/style
 
 ```xml
-android:inputType="numberDecimal"
+<EditText
+    android:id="@+id/input_phone_number"
+    android:layout_width="250dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:ems="10"
+    android:hint="Please input your number"
+    android:inputType="number"
+    android:maxLength="11"
+    android:minHeight="48dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/imageView" />
 ```
 
-
-
-## hint
-
-describe what the user should enter in the field
-
-```xml
-android:hint="Cost of Service"
-```
-
-# RadioGroup
+# Radio Group
 ##  checkedButton
 
 It would be nice to select one of the radio button options by default.
