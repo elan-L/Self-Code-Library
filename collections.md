@@ -186,3 +186,69 @@ class MainActivity : AppCompatActivity() {
     }
 }
 ```
+
+
+
+# Save instance state
+
+
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    private var counter=0
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val btnClickMe:Button=findViewById(R.id.btnClickMe)
+        val tvCount:TextView=findViewById(R.id.tvCount)
+
+        btnClickMe.setOnClickListener {
+            counter++
+            tvCount.text="Counter number: $counter"
+        }
+
+        //If we rotate the screen, the value of counter will lost, but the string remain
+        //solution:
+
+        //2. recover the instance data
+        if(savedInstanceState!=null){
+            counter=savedInstanceState.getInt("counter")
+            tvCount.text="Counter number: $counter"
+        }
+
+
+    }
+
+    /*
+    1. 计数器属性的当前值保存到Bundle中，此对象由Android负责创建和维护
+     */
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        //Save instance data
+        outState.putInt("counter",counter)
+        Log.d("MainActivity","counter data saved: $counter")
+    }
+}
+```
+
+# Static variables
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    //Static variables
+    companion object{
+        var globalCount:Int= 0
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val tvInfo:TextView=findViewById(R.id.tvInfo)
+        tvInfo.text="Global Counter: $globalCount"
+    }
+}
+```
