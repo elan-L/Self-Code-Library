@@ -252,3 +252,18 @@ class MainActivity : AppCompatActivity() {
     }
 }
 ```
+
+
+
+# Intent another activity
+
+typical code
+
+```kotlin
+val btnShowOther=findViewById<Button>(R.id.btnShowOther)
+
+btnShowOther.setOnClickListener {
+    val intent=Intent(this,OtherActivity::class.java)
+    startActivity(intent)
+}
+```
