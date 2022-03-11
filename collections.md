@@ -16,18 +16,11 @@ learn to use viewBinding instead of using findViewById
    }
    ```
 
-3. Note the message **Gradle files have changed since last project sync**
-   ![image-20220302162140933](C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\image-20220302162140933.png)
-
-4. press **sync now**
-
    
 
 ## initialize the binding object
 
-1. open **MainActivity.kt (app > java > com.example.work > MainActivity)**
-
-2. Replace all of the existing code for `MainActivity` class with this code to setup the `MainActivity` to use view binding:
+1. 
 
    ```kotlin
    //original
@@ -38,21 +31,22 @@ learn to use viewBinding instead of using findViewById
        }
    }
    ```
-	
-	replace it with the code below:
-	
-	```kotlin
+
+   replace it with the code below:
+
+   ```kotlin
     class MainActivity : AppCompatActivity() {
-	
+   
         lateinit var binding: ActivityMainBinding
-	
+   
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             binding = ActivityMainBinding.inflate(layoutInflater)
             setContentView(binding.root)
         }
     }
-	```
+   ```
+
 
 ##　 ex
 
@@ -254,4 +248,76 @@ btnShowOther.setOnClickListener {
     val intent=Intent(this,OtherActivity::class.java)
     startActivity(intent)
 }
+```
+
+
+
+# Try read bit map
+
+```kotlin
+//The function read a specifier file, and decoding it into a bit object
+private fun tryReadBitmap(data: Uri): Bitmap? {
+    return try {
+        //for Android P, this method is recommend
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ImageDecoder.createSource(contentResolver, data).let {
+                ImageDecoder.decodeBitmap(it)
+            }
+        } else {
+            //For earlier version, using the traditional ways
+            MediaStore.Images.Media.getBitmap(contentResolver, data)
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+```
+
+```kotlin
+if (it.resultCode == Activity.RESULT_OK) {
+    tryReadBitmap(it.data?.data as Uri)?.apply {
+        binding.imageView.setImageBitmap(this)
+    }
+}
+```
+
+
+
+# Up navigation
+
+1. in AndroidManifest.xml
+
+```xml
+<activity
+    android:name=".FourthActivity"
+    android:exported="false"
+    android:parentActivityName=".ThirdActivity"/>
+```
+
+
+
+2. manually
+
+```kotlin
+override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    //Up button's id is home
+    if (item.itemId==android.R.id.home){
+        //Usually, the function of up and back is similar
+        //therefore, you should finish itself here
+        finish()
+    }
+
+    return super.onOptionsItemSelected(item)
+}
+```
+
+in onCreate()
+
+```kotlin
+//The statement will show on ActionBar in any situation
+supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+//you could replace the icon of narrow
+supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
 ```
