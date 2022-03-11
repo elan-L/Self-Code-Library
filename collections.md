@@ -71,18 +71,6 @@ binding.myButton.text = "A button"
 
 
 
-
-
-# Click Listener
-
-specify what the button do when the user taps it
-
-```ko
-binding.calculateButton.setOnClickListener{ calculateTip() } 
-```
-
-
-
 # Hide keyboard when press Enter
 
 It's a bit of cumbersome to hide the keyboard manually sometime, we hope that the keyboard automatically hide itself after the Enter key is pressed
