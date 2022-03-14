@@ -103,12 +103,85 @@ private fun handleKeyEvent(view: View, keyCode: Int): Boolean {
 
 # intent to the call pane
 
+firstly, you can add permission in the Manifest 
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.elan.androidpermission">
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    .....
+```
+
+
+
 ```kotlin
-private fun callPhone(phoneNumber: String) {
-    val intent = Intent(Intent.ACTION_DIAL)
-    val data = Uri.parse("tel:$phoneNumber")
-    intent.setData(data)
-    startActivity(intent)
+binding.btnCallPhone.setOnClickListener {
+    /*val telephoneNumber= binding.edtPhoneNumber.text.takeUnless {
+        it.isEmpty()
+    }
+        ?.toString()
+        ?:"10086"
+    callPhone(telephoneNumber)*/
+}
+```
+
+```kotlin
+private fun callPhone(telephoneNumber: String) {
+
+
+        //check out the permission of dial phone
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CALL_PHONE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //without permission, request it now
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.CALL_PHONE),
+                CALL_PHONE_REQUEST_CODE
+            )
+            return
+        } else {
+            //permission granted
+            Intent(Intent.ACTION_CALL).setData(
+                Uri.parse("tel:$telephoneNumber")
+            ).apply {
+                startActivity(this)
+            }
+        }
+    }
+```
+
+
+
+out scope of the Main class, create a variable and assign value 1
+
+```kotlin
+val CALL_PHONE_REQUEST_CODE = 1
+```
+
+override the method
+
+```kotlin
+override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+    when (requestCode) {
+        CALL_PHONE_REQUEST_CODE -> {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //permission to make call is granted
+                callPhone("10086")
+            } else {
+                Toast.makeText(
+                    this, "You have rejected the app's requirement.", Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
 }
 ```
 
@@ -321,3 +394,76 @@ supportActionBar?.setDisplayHomeAsUpEnabled(true)
 //you could replace the icon of narrow
 supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
 ```
+
+
+
+
+
+
+
+# App permissions
+
+
+
+projection   **Multiple Permission**
+
+
+
+## check whether a permission is granted or not
+
+```kotlin
+//permission of access location background
+private fun hasBackgroundLocationPermission()=
+    ActivityCompat.checkSelfPermission(
+        this,
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+    )==PackageManager.PERMISSION_GRANTED
+
+
+//Access camera
+private fun hasCameraPermission()=
+    ActivityCompat.checkSelfPermission(
+        this,
+        Manifest.permission.CAMERA
+    )==PackageManager.PERMISSION_GRANTED
+```
+
+
+
+## request a permission
+
+```kotlin
+//request special permission
+private fun requestPermissions(){
+    //get list of permissions not granted
+    val permissionToRequest= mutableListOf<String>()
+
+    if(!hasBackgroundLocationPermission()){
+        permissionToRequest.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    }
+
+    if (!hasCallPhonePermission()){
+        permissionToRequest.add(Manifest.permission.CALL_PHONE)
+    }
+
+    if (!hasCameraPermission()){
+        permissionToRequest.add(Manifest.permission.CAMERA)
+    }
+
+    //if there are permissions not granted
+    if(permissionToRequest.isNotEmpty()){
+        //open the permission request interface, asking for the grantee
+        permissionLauncher.launch(permissionToRequest.toTypedArray())
+    }
+}
+```
+
+
+
+# Different resources for different device
+
+![image-20220313231551524](C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\image-20220313231551524.png)
+
+
+
+projection: Load Different Resource
