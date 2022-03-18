@@ -82,7 +82,7 @@ private fun Greeting(name: String) {
 
 
 
-### add Button
+## add Button
 
 #### Button
 
@@ -103,4 +103,49 @@ Row(modifier = Modifier.padding(24.dp)) {
 ```
 
 #### TextlineButton
+
+## save state
+
+#### remember
+
+```kotlin
+//remember is used to guard against recomposition, so the state wil not reset
+val expand=remember{ mutableStateOf(false)}
+```
+
+```kotlin
+var shouldShowOnboarding by remember {
+    mutableStateOf(true)
+}
+```
+
+
+
+#### rememberSaveable
+
+
+
+```kotlin
+var shouldShowOnboarding by rememberSaveable{
+    mutableStateOf(true)
+}
+```
+
+## scrollable lazy list
+
+### LazyColumn
+
+```kotlin
+LazyColumn(
+    modifier = Modifier.padding(vertical = 4.dp)
+) {
+    items(items=names){name->
+        Greeting(name)
+    }
+}
+```
+
+
+
+### LazyRow
 
