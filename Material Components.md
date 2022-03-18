@@ -54,3 +54,20 @@ A Card view provides an easy way to contain a group of views while providing a c
     
 </com.google.android.material.card.MaterialCardView>
 ```
+
+
+
+# Material icons
+
+dependencies
+
+```
+ implementation "androidx.compose.material:material-icons-extended:$compose_version"
+```
+
+import
+
+```ko
+import ui-material-icons-extended
+```
+
