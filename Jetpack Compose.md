@@ -18,6 +18,14 @@ Text(text = "3 minutes ago", style = MaterialTheme.typography.body2)
 
 
 
+### spacer
+
+```kotlin
+Spacer(modifier = Modifier.height(16.dp))
+```
+
+
+
 ## Image
 
 supposing to use [Coil] library to simplify the steps, which provided composables  and run these steps efficiently
@@ -461,3 +469,70 @@ Scaffold(
 
 #### floatingActionButton
 
+
+
+## customize layout
+
+### layout modifier
+
+```kotlin
+//common structure
+fun Modifier.firstBaselineToTop(
+    firstBaselineToTOp:Dp
+)=this.then(
+    layout{
+        measurable, constraints ->
+        
+    }
+)
+```
+
+
+
+```kotlin
+//create customer layout
+private fun Modifier.firstBaselineToTop(
+    firstBaselineToTOp: Dp
+) = this.then(
+    layout { measurable, constraints ->
+
+        //Measure the composable
+        val placeable = measurable.measure(constraints)
+
+        //Check the composable has the first baseline
+        check(placeable[FirstBaseline] != AlignmentLine.Unspecified)
+        val firstBaseline = placeable[FirstBaseline]
+
+        //Height of the composable with padding -first baseline
+        val placeableY = firstBaselineToTOp.roundToPx() - firstBaseline
+        val height = placeable.height + placeableY
+
+        //now position the composable on the screen
+        layout(placeable.width, height) {
+            //Where the composable get placed
+            placeable.placeRelative(0, placeableY)
+        }
+    }
+)
+```
+
+
+
+### layout composable
+
+```kotlin
+//common structure of a composable that uses the [Layout]
+@Composable
+fun CustomLayout(
+    modifier: Modifier = Modifier,
+    //custom layout attrubutes
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content,
+    ) { measurables, constraints ->
+        //measure and position children given constraints logic here
+    }
+}
+```
