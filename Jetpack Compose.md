@@ -24,7 +24,16 @@ Text(text = "3 minutes ago", style = MaterialTheme.typography.body2)
 Spacer(modifier = Modifier.height(16.dp))
 ```
 
+### divider
 
+```kotlin
+Divider(
+    color = Color.Black,
+    modifier = Modifier
+        .fillMaxHeight()
+        .width(1.dp)
+)
+```
 
 ## Image
 
@@ -192,11 +201,31 @@ private fun SimpleList() {
 
 ### Row
 
+```kotlin
+Row(
+    modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 4.dp),
+    verticalAlignment = Alignment.CenterVertically
+){
+    
+}
+```
+
+
+
+```kotlin
+Row(modifier = modifier.horizontalScroll(rememberScrollState()))
+```
+
 
 
 ### Box
 
-
+```kotlin
+Box(modifier = Modifier
+    .size(16.dp, 16.dp)
+    .background(color = MaterialTheme.colors.secondary)
+)
+```
 
 ## add Button
 
@@ -536,3 +565,256 @@ fun CustomLayout(
     }
 }
 ```
+
+
+
+
+
+### Complex layout composable
+
+```kotlin
+@Composable
+private fun StaggeredGrid(
+    modifier: Modifier = Modifier,
+    rows: Int ,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+        /*
+        as before the first thing we should do is measure our children,
+         remember that you can only  measure your children once
+         */
+
+        //keep track the max width of each row
+        val rowWidths = IntArray(rows) { 0 }
+        //keep track the max height of each row
+        val rowHeights = IntArray(rows) { 0 }
+
+        //Don't constrain the child views further, measure them with given constraints
+        //List of measured children
+        val placeables = measurables.mapIndexed { index, measurable ->
+            //measure each child
+            val placeable = measurable.measure(constraints)
+
+            //Track the width and maxHeight of each row
+            val row = index % rows
+            rowWidths[row] += placeable.width
+            rowHeights[row] = Math.max(rowHeights[row], placeable.height)
+
+            placeable
+        }
+
+        //Grid's width is the widest row
+        val width = rowWidths.maxOrNull()
+            ?.coerceIn(constraints.minWidth.rangeTo(constraints.maxWidth)) ?: constraints.minWidth
+
+        //Grid's height is the sum of the tallest element of each row
+        //coered to the height constraints
+        val height = rowHeights.sumOf { it }
+            .coerceIn(constraints.minHeight.rangeTo(constraints.maxHeight))
+
+        //Y of each row, based on the height accumulation of previous rows
+        val rowY = IntArray(rows) { 0 }
+        for (i in 1 until rows) {
+            rowY[i] = rowY[i - 1] + rowHeights[i - 1]
+        }
+
+        //set the size of the parent layout
+        layout(width, height) {
+            //x cord we have placed up to, per row
+            val rowX = IntArray(rows) { 0 }
+            placeables.forEachIndexed { index, placeable ->
+                val row = index % rows
+                placeable.placeRelative(
+                    x = rowX[row],
+                    y = rowY[row]
+                )
+                rowX[row] += placeable.width
+            }
+        }
+    }
+}
+```
+
+
+
+
+
+## constraint layout
+
+
+
+### build.gradle
+
+```
+implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01"
+```
+
+simple example
+
+
+
+```kotlin
+//constraint layout
+@Composable
+private fun ConstraintLayoutContent() {
+    ConstraintLayout {
+        //create reference for the composable to constrain
+        val (button1, button2, text) = createRefs()
+
+        Button(
+            onClick = { /*TODO*/ },
+            /*
+            Assign reference "button" to the Button composable
+            and constrain it to the top of the constraint layout
+             */
+            modifier = Modifier.constrainAs(button1) {
+                top.linkTo(parent.top, margin = 16.dp)
+            }
+        ) {
+            Text(text = "Button")
+
+        }
+
+        /*
+        Assign reference "text" to the Text composable
+        and constrain it to the bottom of the Button composable
+         */
+
+        Text(
+            text = "Text",
+            modifier = Modifier.constrainAs(text) {
+                top.linkTo(button1.bottom, margin = 16.dp)
+
+                //Centers Text horizontally in the constraint layout
+//                centerHorizontallyTo(parent)
+
+                centerAround(button1.end)
+            }
+        )
+
+        //create barrier
+        val barrier = createEndBarrier(button1, text)
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.constrainAs(button2) {
+                top.linkTo(parent.top, margin = 16.dp)
+                start.linkTo(barrier)
+            }
+        ) {
+            Text(text = "Button2")
+        }
+    }
+}
+```
+
+
+
+
+
+### customize dimension
+
+```kotlin
+@Composable
+private fun LargeConstraintLayout() {
+    ConstraintLayout {
+        val text = createRef()
+
+        val guideline = createGuidelineFromStart(fraction = 0.5f)
+        Text(text = "这些年一直在提醒自己一件事，千万不要感动自己，大部分人看似努力，" +
+                "不过是愚蠢导致的。什么熬夜看书到天亮，连续几天只睡几小时，多久没放假了。" +
+                "如果这些东西也值得炫耀，那么富士康流水线上任何一个人都比你努力多了。" +
+                "人难免天生有自怜情绪，唯有时刻保持清醒，才看得清真正的价值在哪里。\n",
+            modifier = Modifier.constrainAs(text) {
+                linkTo(
+                    start = guideline, end = parent.end
+                )
+                /*
+                you'd like the text to line break in the space available,
+                to achieve this, we can change the [width]behavior like below
+                 */
+                width = Dimension.preferredWrapContent
+
+                /*
+                available [Dimension] behaviour below:
+                [preferredWrapContent] - the layout is wrap content, subject to the constraints in that dimension.
+                [wrapContent] - the layout is wrap content even if the constraints would not allow it.
+                [fillToConstraints] - the layout will expand to fill the space defined by its constraints in that dimension.
+                [preferredValue] - the layout is a fixed dp value, subject to the constraints in that dimension.
+                [value] - the layout is a fixed dp value, regardless of the constraints in that dimension
+                 */
+            }
+        )
+    }
+}
+```
+
+
+
+### decoupled API
+
+keep the constraint decoupled from the layout
+
+```kotlin
+//decoupled API
+@Composable
+private fun DecoupledConstraintLayout() {
+    BoxWithConstraints {
+        val constraints = if (maxWidth < maxHeight) {
+            decoupledConstraints(margin = 16.dp)//Portrait constraints
+        } else {
+            decoupledConstraints(margin = 32.dp)//Landscape constraints
+        }
+
+        ConstraintLayout(constraints) {
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.layoutId("button")
+            ) {
+                Text(text = "Button")
+            }
+
+            Text(
+                text = "Text",
+                modifier = Modifier.layoutId("text")
+            )
+        }
+    }
+}
+
+private fun decoupledConstraints(margin: Dp): ConstraintSet {
+    return ConstraintSet {
+        val button = createRefFor("button")
+        val text = createRefFor("text")
+
+        constrain(button) {
+            top.linkTo(parent.top, margin = margin)
+        }
+        constrain(text) {
+            top.linkTo(button.bottom, margin = margin)
+        }
+    }
+}
+```
+
+
+
+
+
+# state
+
+state in an application is any value that can changed over time
+
+for example it may be a value stored in a Room database, a variable on a class, or even the current value read from an accelerometer
+
+## undirectional data flow
+
+### ViewModel
+
+
+
+### LiveData
+
