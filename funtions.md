@@ -65,6 +65,17 @@ binding.myButton.text = "A button"
 
 
 
+## ignore ViewBinding
+
+> Now, there might be a case where you wan to ignore the view binding feature so you can go ahead and add the following code ```tools:viewBindingIgnore=true```  to you XML files
+
+
+
+## differences from findViewById
+
+> 1. null safety
+> 2. Type safety; no class cast exception
+
 # Hide keyboard when press Enter
 
 It's a bit of cumbersome to hide the keyboard manually sometime, we hope that the keyboard automatically hide itself after the Enter key is pressed
